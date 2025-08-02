@@ -8,6 +8,8 @@ path = "src/lib.rs"
 name = "zero2prod"
 
 [dependencies]
+secrecy = { version = "0.8", features = ["serde"] }
+tracing-actix-web = "0.7"
 tracing-log = "0.2"
 tracing = { version = "0.1", features = ["log"] }
 actix-web = "4"
