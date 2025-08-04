@@ -5,7 +5,7 @@ use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use std::sync::LazyLock;
 use uuid::Uuid;
-use secrecy::{ExposeSecret, Secret};
+use secrecy::Secret;
 
 static TRACING: LazyLock<()> = LazyLock::new(|| {
   let default_filter_level = "info".to_string();
@@ -48,10 +48,11 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
 		database_name: "postgres".to_string(),
 		username: "postgres".to_string(),
 		password: Secret::new("password".to_string()),
-		..config.clone()
+		host: config.host.clone(),
+		port: config.port,
 	};
-	let mut connection = PgConnection::connect(
-			&maintenance_settings.connection_string().expose_secret()
+	let mut connection = PgConnection::connect_with(
+			&maintenance_settings.connect_options()
 		)
 		.await
 		.expect("Failed to connect to Postgres");
@@ -62,7 +63,7 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
 		.expect("Failed to create database.");
 
 	// Migrate databse
-	let connection_pool = PgPool::connect(&config.connection_string().expose_secret())
+	let connection_pool = PgPool::connect_with(config.connect_options())
 		.await
 		.expect("Failed to connect to Postgres.");
 	sqlx::migrate!("./migrations")

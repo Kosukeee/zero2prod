@@ -8,6 +8,7 @@ pub mod startup;
 pub mod telemetry;
 
 #[derive(serde::Deserialize)]
+#[allow(dead_code)]
 struct FormData {
   email: String,
   name: String,
