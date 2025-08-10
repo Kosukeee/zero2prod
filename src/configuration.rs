@@ -3,6 +3,7 @@ use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
 use crate::domain::SubscriberEmail;
 
+#[derive(Clone)]
 #[derive(serde::Deserialize)]
 pub struct Settings {
   pub database: DatabaseSettings,
@@ -10,6 +11,7 @@ pub struct Settings {
   pub email_client: EmailClientSettings,
 }
 
+#[derive(Clone)]
 #[derive(serde::Deserialize)]
 pub struct EmailClientSettings {
   pub base_url: String,
@@ -28,6 +30,7 @@ impl EmailClientSettings {
   }
 }
 
+#[derive(Clone)]
 #[derive(serde::Deserialize)]
 pub struct ApplicationSettings {
   #[serde(deserialize_with = "deserialize_number_from_string")]
@@ -35,6 +38,7 @@ pub struct ApplicationSettings {
   pub host: String,
 }
 
+#[derive(Clone)]
 #[derive(serde::Deserialize)]
 pub struct DatabaseSettings {
   pub username: String,
