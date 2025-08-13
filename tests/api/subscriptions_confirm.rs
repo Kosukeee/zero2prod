@@ -1,4 +1,5 @@
 use crate::helpers::spawn_app;
+use sqlx::Row;
 use wiremock::{ResponseTemplate, Mock};
 use wiremock::matchers::{path, method};
 
@@ -65,12 +66,16 @@ async fn clicking_on_the_confirmation_link_confirms_a_subscriber() {
     .unwrap();
 
   // Assert
-  let saved = sqlx::query!("SELECT email, name, status FROM subscriptions",)
+  let row = sqlx::query("SELECT email, name, status FROM subscriptions")
     .fetch_one(&app.db_pool)
     .await
     .expect("Failed to fetch saved subscription.");
 
-  assert_eq!(saved.email, "ursula_le_guin@gmail.com");
-  assert_eq!(saved.name, "le guin");
-  assert_eq!(saved.status, Some("confirmed".to_string()));
+  let email: String = row.try_get("email").unwrap();
+  let name: String = row.try_get("name").unwrap();
+  let status: Option<String> = row.try_get("status").unwrap();
+
+  assert_eq!(email, "ursula_le_guin@gmail.com");
+  assert_eq!(name, "le guin");
+  assert_eq!(status, Some("confirmed".to_string()));
 }
